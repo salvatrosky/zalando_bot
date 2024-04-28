@@ -3,3 +3,5 @@ psycopg2-binary>=2.8
 celery
 redis
 djangorestframework
+python-telegram-bot
+django-environ
