@@ -5,3 +5,4 @@ redis
 djangorestframework
 python-telegram-bot
 django-environ
+beautifulsoup4

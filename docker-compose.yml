@@ -25,6 +25,7 @@ services:
             - redis
     celery:
         build: .
+        container_name: celery
         command: celery -A core worker -l INFO
         volumes:
             - .:/usr/src/app
