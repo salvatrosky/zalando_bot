@@ -51,6 +51,8 @@ services:
             - ./.envs/.env
         volumes:
             - pgdata:/var/lib/postgresql/data/
+        ports:
+            - 5432:5432
     redis:
         image: "redis:alpine"
         

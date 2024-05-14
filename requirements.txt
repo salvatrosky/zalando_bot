@@ -6,3 +6,4 @@ djangorestframework
 python-telegram-bot
 django-environ
 beautifulsoup4
+requests
