@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/3.1/ref/settings/
 
 from pathlib import Path
 import os
+from celery.schedules import crontab
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -132,6 +133,15 @@ STATIC_URL = '/static/'
 
 CELERY_BROKER_URL = os.environ.get("CELERY_BROKER", "redis://redis:6379/0")
 CELERY_RESULT_BACKEND = os.environ.get("CELERY_BROKER", "redis://redis:6379/0")
+
+CELERY_BEAT_SCHEDULE = {
+    'mi_tarea_cada_minuto': {
+        'task': 'app.tasks.check_prices',
+        'schedule': crontab(minute='*/1'),  # Cada minuto
+    },
+}
+
+
 CONTAINER_NAME = os.environ.get("CONTAINER_NAME", "")
 
 TELEGRAM_TOKEN = os.environ.get("TELEGRAM_TOKEN", default='')
