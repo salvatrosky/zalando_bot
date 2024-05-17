@@ -1,9 +1,12 @@
+from decimal import Decimal
 import requests
 from bs4 import BeautifulSoup
+from app.telegram_handler import send_message
 from asgiref.sync import sync_to_async
 import logging
 
 logger = logging.getLogger(__name__)
+
 
 def fetch_price_span(url):
     response = requests.get(url)
@@ -20,22 +23,26 @@ def fetch_price_span(url):
                     return price
     return None
 
-async def test_scraper(url, user_id):
+
+async def test_scraper(product):
     from app.models import Product
 
-    price = fetch_price_span(url)
-    
-    if price is not None:
-        logger.info("Price is not None")
+    new_price = fetch_price_span(product.link)
+    last_price = product.last_price
+
+    if new_price and new_price != str(product.last_price):
+        new_price = Decimal(new_price)
+        logger.info(f"Price changed from {product.last_price} to {new_price}")
         try:
-            # Log the parameters before creating the Product
-            logger.info(f"Creating product with user_id: {user_id}, last_price: {price}")
-            await sync_to_async(Product.objects.filter(link=url, user_id=user_id).update)(last_price=price, name="PRODUCT NAME")
+            logger.info(
+                f"Updating product with user_id: {product.user_id}, last_price: {new_price} link {product.link}")
+            await sync_to_async(Product.objects.filter(link=product.link).update)(last_price=new_price, name="PRODUCT NAME")
             logger.info("Product created successfully")
         except Exception as e:
-            # Log any exceptions that occur during the creation
-            logger.error(f"Error creating product: {e}")
-    else:
-        logger.info("Price is None")
-    
-    return price
+            logger.error(f"Error Updating product: {e}")
+
+        chat_id = await sync_to_async(lambda: product.user.chat_id)()
+        message = f'Price updated: {product.link} from €{last_price} to €{new_price}'
+        await send_message(chat_id=chat_id, message=message)
+
+    return new_price

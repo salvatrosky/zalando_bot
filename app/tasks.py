@@ -31,7 +31,7 @@ def check_prices():
             products = Product.objects.all()
 
             for product in products:
-                asyncio.run(test_scraper(product.link, product.user.id))
+                asyncio.run(test_scraper(product))
 
         finally:
             lock.release()
