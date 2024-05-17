@@ -17,3 +17,13 @@ jobs:
         echo "SSH User: ${{ secrets.SSH_USER }}"
         echo "SSH Host: ${{ secrets.SSH_HOST }}"
     
+    - name: Set up SSH
+      uses: webfactory/ssh-agent@v0.5.3
+      with:
+        ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+
+    - name: Copy files via SCP
+      run: scp -o StrictHostKeyChecking=no -r ./* ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:/opt/zalando_bot
+
+    - name: Execute SSH command
+      run: ssh -o StrictHostKeyChecking=no ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "sh /opt/zalando_bot/deploy_script.sh"
