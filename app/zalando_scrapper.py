@@ -4,6 +4,8 @@ from bs4 import BeautifulSoup
 from app.telegram_handler import send_message
 from asgiref.sync import sync_to_async
 import logging
+from app.translations.translations import translator
+
 
 logger = logging.getLogger(__name__)
 
@@ -20,11 +22,15 @@ def fetch_price_span(url):
                 if "€" in span.text:
                     price = span.text.split()[0].replace(',', '.')
                     logger.info(f'Price found: {price}')
-                    return price
+                    try:
+                        Decimal(price)
+                        return price
+                    except:
+                        pass
     return None
 
 
-async def test_scraper(product):
+async def test_scraper(product, first_time=False):
     from app.models import Product
 
     new_price = fetch_price_span(product.link)
@@ -41,8 +47,12 @@ async def test_scraper(product):
         except Exception as e:
             logger.error(f"Error Updating product: {e}")
 
-        chat_id = await sync_to_async(lambda: product.user.chat_id)()
-        message = f'Price updated: {product.link} from €{last_price} to €{new_price}'
-        await send_message(chat_id=chat_id, message=message)
+        if not first_time:
+            user = await sync_to_async(lambda: product.user)()
+
+            price_updated_message = translator.get_translation(
+                'price_updated', user.language, link=product.link, last_price=last_price, new_price=new_price)
+
+            await send_message(chat_id=user.chat_id, message=price_updated_message)
 
     return new_price

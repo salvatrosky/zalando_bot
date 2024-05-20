@@ -1,0 +1,32 @@
+{
+    "EN": {
+        "greeting": "Hello {name}! Send me your Zalando link and I'll inform you when the price goes down.",
+        "choose_language": "Select your language:",
+        "thanks": "Thanks for your answer!",
+        "link_already_registered": "This looks like a link you already have registered",
+        "link_registered_success": "Link registered successfully!",
+        "link_processing_error": "An error occurred while processing your link. Please try again later.",
+        "invalid_http_link": "Please send a valid HTTP link.",
+        "price_updated": "Price updated: {link} from €{last_price} to €{new_price}"
+    },
+    "ES": {
+        "greeting": "¡Hola {name}! Envíame tu enlace de Zalando y te informaré cuando el precio baje.",
+        "choose_language": "Seleccione su idioma:",
+        "thanks": "¡Gracias por su respuesta!",
+        "link_already_registered": "Parece que este es un enlace que ya tienes registrado",
+        "link_registered_success": "¡Enlace registrado con éxito!",
+        "link_processing_error": "Ocurrió un error al procesar tu enlace. Por favor, inténtalo de nuevo más tarde.",
+        "invalid_http_link": "Por favor, envía un enlace HTTP válido.",
+        "price_updated": "Precio actualizado: {link} de €{last_price} a €{new_price}"
+    },
+    "IT": {
+        "greeting": "Ciao {name}! Inviami il tuo link Zalando e ti informerò quando il prezzo scenderà.",
+        "choose_language": "Seleziona la tua lingua:",
+        "thanks": "Grazie per la tua risposta!",
+        "link_already_registered": "Sembra che questo sia un link che hai già registrato",
+        "link_registered_success": "Link registrato con successo!",
+        "link_processing_error": "Si è verificato un errore durante l'elaborazione del tuo link. Per favore, riprova più tardi.",
+        "invalid_http_link": "Per favore, invia un link HTTP valido.",
+        "price_updated": "Prezzo aggiornato: {link} da €{last_price} a €{new_price}"
+    }
+}

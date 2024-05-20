@@ -10,6 +10,7 @@ from app.users.helpers import set_user_language
 from asgiref.sync import sync_to_async
 from telegram import Update
 from core.settings import TELEGRAM_TOKEN
+from app.translations.translations import translator
 
 # Set up logging
 logging.basicConfig(
@@ -26,7 +27,10 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     except Exception as e:
         logger.info(f"User already created: {e}")
 
-    await update.message.reply_text(f'Hello {update.effective_user.first_name}! Send me your Zalando link and I\'ll inform you when the price goes down.')
+    greeting = translator.get_translation(
+        'greeting', name=update.effective_user.first_name)
+
+    await update.message.reply_text(greeting)
 
 
 async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -41,7 +45,10 @@ async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
             await set_user_language(data["data"], chat_id)
 
     await query.answer()
-    await query.edit_message_text(text="Gracias por tu respuesta!")
+
+    thanks_message = translator.get_translation('thanks', data["data"])
+
+    await query.edit_message_text(text=thanks_message)
 
 
 async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
@@ -55,23 +62,31 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE) -> 
     if re.match(r'^http[s]?://www.zalando.it', message):
         user = await sync_to_async(User.objects.get)(chat_id=chat_id)
         try:
-            # Check if the product already exists
             product_exists = await sync_to_async(Product.objects.filter(link=message, user_id=user.id).exists)()
             if product_exists:
-                await update.message.reply_text('This looks like a link you already have registered')
+                link_already_registered_message = translator.get_translation(
+                    'link_already_registered', user.language)
+                await update.message.reply_text(link_already_registered_message)
                 return
 
-            await sync_to_async(Product.objects.create)(link=message, user=user)
-            await update.message.reply_text('Link registered successfully!')
+            product = await sync_to_async(Product.objects.create)(link=message, user=user)
 
-            await sync_to_async(proccess_link.delay)(message, user.id)
+            link_registered_success_message = translator.get_translation(
+                'link_registered_success', user.language)
+            await update.message.reply_text(link_registered_success_message)
+
+            await sync_to_async(proccess_link.delay)(product.id, first_time=True)
 
         except Exception as e:
             logger.error(f"Error processing link: {e}")
-            await update.message.reply_text('An error occurred while processing your link. Please try again later.')
+            link_processing_error_message = translator.get_translation(
+                'link_processing_error', user.language)
+            await update.message.reply_text(link_processing_error_message)
 
     else:
-        await update.message.reply_text('Please send a valid HTTP link.')
+        invalid_http_link_message = translator.get_translation(
+            'invalid_http_link', user.language)
+        await update.message.reply_text(invalid_http_link_message)
 
 
 def run_bot():

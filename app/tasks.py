@@ -13,9 +13,14 @@ redis_client = redis.StrictRedis(host='redis', port=6379, db=0)
 
 
 @shared_task
-def proccess_link(message, user_id):
-    logger.info(f"Start proccess_link with args: {message}, {user_id}")
-    result = asyncio.run(test_scraper(message, user_id))
+def proccess_link(product_id, first_time=False):
+    from app.models import Product
+    try:
+        product = Product.objects.get(id=product_id)
+    except Product.DoesNotExist:
+        return 
+    
+    result = asyncio.run(test_scraper(product, first_time))
     return result
 
 
