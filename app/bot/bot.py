@@ -22,15 +22,15 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     from app.models import User
 
     chat_id = update.message.chat_id
-    try:
-        await sync_to_async(User.objects.create)(chat_id=chat_id, first_name=update.effective_user.first_name)
-    except Exception as e:
-        logger.info(f"User already created: {e}")
+    user, created = await sync_to_async(User.objects.get_or_create)(chat_id=chat_id, first_name=update.effective_user.first_name)
 
     greeting = translator.get_translation(
-        'greeting', name=update.effective_user.first_name)
+        'greeting', language=user.language, name=update.effective_user.first_name,)
 
     await update.message.reply_text(greeting)
+
+    if created:
+        await set_language(update, context)
 
 
 async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
