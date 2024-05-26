@@ -21,9 +21,9 @@ def fetch_price_span(url):
             for span in price_spans:
                 if "€" in span.text:
                     price = span.text.split()[0].replace(',', '.')
-                    logger.info(f'Price found: {price}')
-                    try:
+                    try:                    
                         Decimal(price)
+                        logger.info(f'Price found {url}: {price}')
                         return price
                     except:
                         pass

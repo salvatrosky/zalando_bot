@@ -10,8 +10,6 @@ services:
                             python manage.py runserver 0.0.0.0:8000"
         volumes:
             - .:/usr/src/app/
-        ports:
-            - "8000:8000"
         environment:
             - CONTAINER_NAME=DJANGO
             - DEBUG=1
@@ -69,7 +67,7 @@ services:
         volumes:
             - pgdata:/var/lib/postgresql/data/
         ports:
-            - 5432:5432
+            - 5433:5432
     redis:
         image: "redis:alpine"
         
