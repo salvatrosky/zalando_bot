@@ -137,7 +137,7 @@ CELERY_RESULT_BACKEND = os.environ.get("CELERY_BROKER", "redis://redis:6379/0")
 CELERY_BEAT_SCHEDULE = {
     'mi_tarea_cada_minuto': {
         'task': 'app.tasks.check_prices',
-        'schedule': crontab(minute='*/1'),  # Cada minuto
+        'schedule': crontab(minute='*/30'),  # Cada minuto
     },
 }
 
